@@ -1,0 +1,21 @@
+We publish a binary of the javac.jar from this repo to Sonatype for use
+in error-prone (https://code.google.com/p/error-prone).  
+
+To build javac.jar, execute these commands:
+cd make
+ant -Dboot.java.home=<path_to_jdk> build-bootstrap-javac
+
+The compiled jar will be in ../build/bootstrap/lib/javac.jar.
+
+To publish to Maven Central:
+1) Update the version number in maven/pom.xml to match the version of langtools
+   in the repo.
+2) Execute these commands
+   cd maven
+   mvn gpg:sign-and-deploy-file -DpomFile=pom.xml \ 
+       -Dfile=../build/bootstrap/lib/javac.jar \
+       -DrepositoryId=sonatype-nexus-staging \
+       -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
+3) This will upload it to a staging repo.  Go to https://oss.sonatype.org, log 
+in, and look at the staging repos.  Find the comgoogleerrorprone one and sanity
+check it.  If it looks OK, close it and release it.
