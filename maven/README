@@ -1,0 +1,3 @@
+This directory is used to publish a compiled javac.jar to Sonatype, making it
+available to Maven users. For instructions, see the README.google file in the
+parent directory.
