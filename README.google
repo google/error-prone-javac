@@ -15,7 +15,9 @@ To publish to Maven Central:
    mvn gpg:sign-and-deploy-file -DpomFile=pom.xml \ 
        -Dfile=../build/bootstrap/lib/javac.jar \
        -DrepositoryId=sonatype-nexus-staging \
-       -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/
+       -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ \
+       -Dsources=fake-sources.jar \
+       -Djavadoc=fake-javadoc.jar
 3) This will upload it to a staging repo.  Go to https://oss.sonatype.org, log 
 in, and look at the staging repos.  Find the comgoogleerrorprone one and sanity
 check it.  If it looks OK, close it and release it.
