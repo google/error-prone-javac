@@ -1,3 +1,8 @@
 This directory is used to publish a compiled javac.jar to Sonatype, making it
 available to Maven users. For instructions, see the README.google file in the
 parent directory.
+
+The fake-sources.jar and fake-javadoc.jar files are required for the Sonatype
+Central Repository.  Their documentation instructs us to create fake artifacts
+for these when needed to pass the checking.  See
+http://central.sonatype.org/pages/requirements.html.
