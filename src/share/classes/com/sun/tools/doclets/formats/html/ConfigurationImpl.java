@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1998, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1998, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -37,6 +37,7 @@ import com.sun.tools.doclets.internal.toolkit.util.*;
 import com.sun.tools.doclint.DocLint;
 import com.sun.tools.javac.file.JavacFileManager;
 import com.sun.tools.javac.util.Context;
+import com.sun.tools.javac.util.StringUtils;
 import com.sun.tools.javadoc.RootDocImpl;
 
 /**
@@ -237,7 +238,7 @@ public class ConfigurationImpl extends Configuration {
     public void setSpecificDocletOptions(String[][] options) {
         for (int oi = 0; oi < options.length; ++oi) {
             String[] os = options[oi];
-            String opt = os[0].toLowerCase();
+            String opt = StringUtils.toLowerCase(os[0]);
             if (opt.equals("-footer")) {
                 footer = os[1];
             } else if (opt.equals("-header")) {
@@ -247,7 +248,7 @@ public class ConfigurationImpl extends Configuration {
             } else if (opt.equals("-doctitle")) {
                 doctitle = os[1];
             } else if (opt.equals("-windowtitle")) {
-                windowtitle = os[1];
+                windowtitle = os[1].replaceAll("\\<.*?>", "");
             } else if (opt.equals("-top")) {
                 top = os[1];
             } else if (opt.equals("-bottom")) {
@@ -325,7 +326,7 @@ public class ConfigurationImpl extends Configuration {
             return result;
         }
         // otherwise look for the options we have added
-        option = option.toLowerCase();
+        option = StringUtils.toLowerCase(option);
         if (option.equals("-nodeprecatedlist") ||
             option.equals("-noindex") ||
             option.equals("-notree") ||
@@ -389,7 +390,7 @@ public class ConfigurationImpl extends Configuration {
         // otherwise look at our options
         for (int oi = 0; oi < options.length; ++oi) {
             String[] os = options[oi];
-            String opt = os[0].toLowerCase();
+            String opt = StringUtils.toLowerCase(os[0]);
             if (opt.equals("-helpfile")) {
                 if (nohelp == true) {
                     reporter.printError(getText("doclet.Option_conflict",
