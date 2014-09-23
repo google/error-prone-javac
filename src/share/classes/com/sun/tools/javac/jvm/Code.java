@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -1925,6 +1925,13 @@ public class Code {
             return aliveRanges.isEmpty() ? null : aliveRanges.get(aliveRanges.size() - 1);
         }
 
+        void removeLastRange() {
+            Range lastRange = lastRange();
+            if (lastRange != null) {
+                aliveRanges.remove(lastRange);
+            }
+        }
+
         @Override
         public String toString() {
             if (aliveRanges == null) {
@@ -1955,9 +1962,7 @@ public class Code {
                     }
                 }
             } else {
-                if (!aliveRanges.isEmpty()) {
-                    aliveRanges.remove(aliveRanges.size() - 1);
-                }
+                removeLastRange();
             }
         }
 
@@ -1965,16 +1970,14 @@ public class Code {
             if (aliveRanges.isEmpty()) {
                 return false;
             }
-            Range range = lastRange();
-            return range.length == Character.MAX_VALUE;
+            return lastRange().length == Character.MAX_VALUE;
         }
 
         public boolean isLastRangeInitialized() {
             if (aliveRanges.isEmpty()) {
                 return false;
             }
-            Range range = lastRange();
-            return range.start_pc != Character.MAX_VALUE;
+            return lastRange().start_pc != Character.MAX_VALUE;
         }
 
         public Range getWidestRange() {
@@ -2095,7 +2098,7 @@ public class Code {
                 v.closeRange(length);
                 putVar(v);
             } else {
-                v.lastRange().start_pc = Character.MAX_VALUE;
+                v.removeLastRange();
             }
         }
     }
@@ -2189,9 +2192,9 @@ public class Code {
         // Keep local variables if
         // 1) we need them for debug information
         // 2) it is an exception type and it contains type annotations
-        if (!varDebugInfo &&
-                (!var.sym.isExceptionParameter() ||
-                var.sym.hasTypeAnnotations())) return;
+        boolean keepLocalVariables = varDebugInfo ||
+            (var.sym.isExceptionParameter() && var.sym.hasTypeAnnotations());
+        if (!keepLocalVariables) return;
         if ((var.sym.flags() & Flags.SYNTHETIC) != 0) return;
         if (varBuffer == null)
             varBuffer = new LocalVar[20];

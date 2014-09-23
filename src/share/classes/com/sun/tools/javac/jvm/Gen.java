@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -1811,8 +1811,7 @@ public class Gen extends JCTree.Visitor {
             genStat(tree.thenpart, env, CRT_STATEMENT | CRT_FLOW_TARGET);
             thenExit = code.branch(goto_);
             if (varDebugInfo && lvtRanges.containsKey(code.meth, tree.thenpart)) {
-                code.closeAliveRanges(tree.thenpart,
-                        thenExit != null && tree.elsepart == null ? thenExit.pc : code.cp);
+                code.closeAliveRanges(tree.thenpart, code.cp);
             }
         }
         if (elseChain != null) {
@@ -2818,7 +2817,7 @@ public class Gen extends JCTree.Visitor {
         }
 
         private LVTAssignAnalyzer(LVTRanges lvtRanges, Symtab syms, Names names) {
-            super(new LVTBits(), syms, names);
+            super(new LVTBits(), syms, names, false);
             lvtInits = (LVTBits)inits;
             this.lvtRanges = lvtRanges;
         }

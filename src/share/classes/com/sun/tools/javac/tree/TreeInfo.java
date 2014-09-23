@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999, 2013, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1999, 2014, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -130,6 +130,14 @@ public class TreeInfo {
         if (tree.hasTag(METHODDEF)) {
             Name name = ((JCMethodDecl) tree).name;
             return name == name.table.names.init;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isReceiverParam(JCTree tree) {
+        if (tree.hasTag(VARDEF)) {
+            return ((JCVariableDecl)tree).nameexpr != null;
         } else {
             return false;
         }
@@ -831,6 +839,8 @@ public class TreeInfo {
             return symbol(((JCTypeApply) tree).clazz);
         case ANNOTATED_TYPE:
             return symbol(((JCAnnotatedType) tree).underlyingType);
+        case REFERENCE:
+            return ((JCMemberReference) tree).sym;
         default:
             return null;
         }
