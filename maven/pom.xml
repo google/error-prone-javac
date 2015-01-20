@@ -15,7 +15,7 @@
   <name>error-prone javac</name>
   <groupId>com.google.errorprone</groupId>
   <artifactId>javac</artifactId>
-  <version>1.8.0-beta-132</version>
+  <version>1.9.0-dev-r2644-1</version>
   <packaging>jar</packaging>
 
   <description>A repackaged copy of javac for error-prone to depend on</description>
