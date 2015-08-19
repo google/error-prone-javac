@@ -2,10 +2,14 @@ We publish a binary of the javac.jar from this repo to Sonatype for use
 in error-prone (https://code.google.com/p/error-prone).  
 
 To build javac.jar, execute these commands:
-cd make
-ant -Dboot.java.home=<path_to_jdk> build-bootstrap-javac
 
-The compiled jar will be in ../build/bootstrap/lib/javac.jar.
+```
+cd make
+ant -Dboot.java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_60.jdk/Contents/Home/ clean build-all-tools
+(LIB=$PWD/dist/lib/; OUT=$PWD/maven/javac.jar; cd $(mktemp -d -t javac); jar xf $LIB/jdk.compiler.jar; jar xf $LIB/java.compiler.jar; jar cf $OUT *)
+```
+
+The compiled jar will be in `../maven/javac.jar`.
 
 To publish to Maven Central:
 1) Update the version number in maven/pom.xml to match the version of langtools
@@ -13,7 +17,7 @@ To publish to Maven Central:
 2) Execute these commands
    cd maven
    mvn gpg:sign-and-deploy-file -DpomFile=pom.xml \ 
-       -Dfile=../build/bootstrap/lib/javac.jar \
+       -Dfile=javac.jar \
        -DrepositoryId=sonatype-nexus-staging \
        -Durl=https://oss.sonatype.org/service/local/staging/deploy/maven2/ \
        -Dsources=fake-sources.jar \
