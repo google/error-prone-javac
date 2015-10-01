@@ -119,10 +119,24 @@ public class Locations {
         this.fsInfo = fsInfo;
     }
 
+    public Collection<Path> bootClassPath() {
+        return getLocation(PLATFORM_CLASS_PATH);
+    }
+
     boolean isDefaultBootClassPath() {
         BootClassPathLocationHandler h
                 = (BootClassPathLocationHandler) getHandler(PLATFORM_CLASS_PATH);
         return h.isDefault();
+    }
+
+    public Collection<Path> userClassPath() {
+        return getLocation(CLASS_PATH);
+    }
+
+    public Collection<Path> sourcePath() {
+        Collection<Path> p = getLocation(SOURCE_PATH);
+        // TODO: this should be handled by the LocationHandler
+        return p == null || p.isEmpty() ? null : p;
     }
 
     /**
