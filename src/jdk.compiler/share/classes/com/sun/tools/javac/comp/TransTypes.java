@@ -80,6 +80,8 @@ public class TransTypes extends TreeTranslator {
     /** Switch: are default methods supported? */
     private final boolean allowInterfaceBridges;
 
+    private final boolean skipDuplicateBridges;
+
     protected TransTypes(Context context) {
         context.put(transTypesKey, this);
         compileStates = CompileStates.instance(context);
@@ -94,6 +96,7 @@ public class TransTypes extends TreeTranslator {
         Source source = Source.instance(context);
         allowInterfaceBridges = source.allowDefaultMethods();
         allowGraphInference = source.allowGraphInference();
+        skipDuplicateBridges = Options.instance(context).getBoolean("skipDuplicateBridges", false);
         annotate = Annotate.instance(context);
     }
 
@@ -406,6 +409,9 @@ public class TransTypes extends TreeTranslator {
                                        MethodSymbol impl,
                                        Type dest) {
             if (impl != method) {
+                if (skipBridge(method, impl, dest)) {
+                    return false;
+                }
                 // If either method or impl have different erasures as
                 // members of dest, a bridge is needed.
                 Type method_erasure = method.erasure(types);
@@ -445,6 +451,41 @@ public class TransTypes extends TreeTranslator {
                                                Type erasure) {
             return types.isSameType(erasure(types.memberType(type, method)),
                                     erasure);
+        }
+        /**
+         * Returns true if a bridge should be skipped because we expect it to be declared in
+         * a super-type.
+         *
+         * @param method The symbol for which a bridge might have to be added
+         * @param impl The implementation of method
+         * @param dest The type in which the bridge would go
+         */
+        private boolean skipBridge(MethodSymbol method,
+                                   MethodSymbol impl,
+                                   Type dest) {
+            if (!skipDuplicateBridges) {
+                return false;
+            }
+            if (dest.tsym == impl.owner) {
+                // the method is implemented in the current class; we need to bridge it here
+                return false;
+            }
+            if (!types.isSubtype(
+                    types.erasure(impl.owner.type), types.erasure(method.owner.type))) {
+                // the method is implemented in some supertype that is not a subtype of
+                // the declaring type, so the bridge will not have been created in the
+                // implementing class
+                return false;
+            }
+            if (!impl.overrides(method, (TypeSymbol) impl.owner, types, true)) {
+                // the method is implementing in a supertype that is also a subtype
+                // of the declaring type, but the method's signature in the implementing
+                // class does not override its signature in the declaring class
+                return false;
+            }
+            // we don't need to consider visibility for accessibility bridges, because
+            // that happens on a separate code path
+            return true;
         }
 
     void addBridges(DiagnosticPosition pos,
