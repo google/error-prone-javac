@@ -79,6 +79,12 @@ public abstract class StringConcat {
     private static StringConcat makeConcat(Context context) {
         Target target = Target.instance(context);
         String opt = Options.instance(context).get("stringConcat");
+
+        // disable indy strcat by default
+        if (opt == null) {
+            opt = "inline";
+        }
+
         if (target.hasStringConcatFactory()) {
             if (opt == null) {
                 opt = "indyWithConstants";
