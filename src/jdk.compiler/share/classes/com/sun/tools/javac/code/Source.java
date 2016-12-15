@@ -206,6 +206,9 @@ public enum Source {
     public boolean allowPostApplicabilityVarargsAccessCheck() {
         return compareTo(JDK1_8) >= 0;
     }
+    public boolean mapCapturesToBounds() {
+        return compareTo(JDK1_8) < 0;
+    }
     public boolean allowPrivateSafeVarargs() {
         return compareTo(JDK1_9) >= 0;
     }

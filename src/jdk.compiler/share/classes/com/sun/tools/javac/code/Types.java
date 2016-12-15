@@ -87,6 +87,7 @@ public class Types {
     final Names names;
     final boolean allowObjectToPrimitiveCast;
     final boolean allowDefaultMethods;
+    final boolean mapCapturesToBounds;
     final Check chk;
     final Enter enter;
     JCDiagnostic.Factory diags;
@@ -111,6 +112,7 @@ public class Types {
         Source source = Source.instance(context);
         allowObjectToPrimitiveCast = source.allowObjectToPrimitiveCast();
         allowDefaultMethods = source.allowDefaultMethods();
+        mapCapturesToBounds = source.mapCapturesToBounds();
         chk = Check.instance(context);
         enter = Enter.instance(context);
         capturedName = names.fromString("<captured wildcard>");
