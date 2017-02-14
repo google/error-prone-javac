@@ -123,7 +123,7 @@ public class Gen extends JCTree.Visitor {
             : options.isSet(G_CUSTOM, "vars");
         genCrt = options.isSet(XJCOV);
         debugCode = options.isSet("debug.code");
-        allowBetterNullChecks = target.hasObjects();
+        allowBetterNullChecks = options.getBoolean("allowBetterNullChecks", target.hasObjects());
         pool = new Pool(types);
 
         // ignore cldc because we cannot have both stackmap formats
