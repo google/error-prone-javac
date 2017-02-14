@@ -313,10 +313,10 @@ public class JavacFileManager extends BaseFileManager implements StandardJavaFil
 
         if (attr != null) {
             if (attr.isDirectory()) {
-                fs = new DirectoryContainer(realPath);
+                fs = new DirectoryContainer(path);
             } else {
                 try {
-                    fs = new ArchiveContainer(realPath);
+                    fs = new ArchiveContainer(path);
                 } catch (ProviderNotFoundException | SecurityException ex) {
                     throw new IOException(ex);
                 }
