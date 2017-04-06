@@ -109,7 +109,7 @@ public enum Source {
 
     private static final Source MAX = values()[values().length - 1];
 
-    public static final Source DEFAULT = MAX;
+    public static final Source DEFAULT = JDK1_8;
 
     public static Source lookup(String name) {
         return tab.get(name);
