@@ -106,7 +106,7 @@ public enum Target {
         this.minorVersion = minorVersion;
     }
 
-    public static final Target DEFAULT = values()[values().length - 1];
+    public static final Target DEFAULT = JDK1_8;
 
     public static Target lookup(String name) {
         return tab.get(name);
