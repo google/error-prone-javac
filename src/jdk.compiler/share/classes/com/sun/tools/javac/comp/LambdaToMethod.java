@@ -2062,7 +2062,7 @@ public class LambdaToMethod extends TreeTranslator {
                         Assert.error(skind.name());
                         throw new AssertionError();
                 }
-                if (ret != sym) {
+                if (ret != sym && skind.propagateAnnotations()) {
                     ret.setDeclarationAttributes(sym.getRawAttributes());
                     ret.setTypeAttributes(sym.getRawTypeAttributes());
                 }
@@ -2098,7 +2098,6 @@ public class LambdaToMethod extends TreeTranslator {
                             if (m.containsKey(lambdaIdent.sym)) {
                                 Symbol tSym = m.get(lambdaIdent.sym);
                                 JCTree t = make.Ident(tSym).setType(lambdaIdent.type);
-                                tSym.setTypeAttributes(lambdaIdent.sym.getRawTypeAttributes());
                                 return t;
                             }
                             break;
@@ -2107,7 +2106,6 @@ public class LambdaToMethod extends TreeTranslator {
                                 // Transform outer instance variable references anchoring them to the captured synthetic.
                                 Symbol tSym = m.get(lambdaIdent.sym.owner);
                                 JCExpression t = make.Ident(tSym).setType(lambdaIdent.sym.owner.type);
-                                tSym.setTypeAttributes(lambdaIdent.sym.owner.getRawTypeAttributes());
                                 t = make.Select(t, lambdaIdent.name);
                                 t.setType(lambdaIdent.type);
                                 TreeInfo.setSymbol(t, lambdaIdent.sym);
@@ -2128,7 +2126,6 @@ public class LambdaToMethod extends TreeTranslator {
                 if (m.containsKey(fieldAccess.sym.owner)) {
                     Symbol tSym = m.get(fieldAccess.sym.owner);
                     JCExpression t = make.Ident(tSym).setType(fieldAccess.sym.owner.type);
-                    tSym.setTypeAttributes(fieldAccess.sym.owner.getRawTypeAttributes());
                     return t;
                 }
                 return null;
@@ -2328,7 +2325,18 @@ public class LambdaToMethod extends TreeTranslator {
         CAPTURED_VAR,   // variables in enclosing scope to translated synthetic parameters
         CAPTURED_THIS,  // class symbols to translated synthetic parameters (for captured member access)
         CAPTURED_OUTER_THIS, // used when `this' capture is illegal, but outer this capture is legit (JDK-8129740)
-        TYPE_VAR       // original to translated lambda type variables
+        TYPE_VAR;      // original to translated lambda type variables
+
+        boolean propagateAnnotations() {
+            switch (this) {
+                case CAPTURED_VAR:
+                case CAPTURED_THIS:
+                case CAPTURED_OUTER_THIS:
+                    return false;
+                default:
+                    return true;
+           }
+        }
     }
 
     /**
