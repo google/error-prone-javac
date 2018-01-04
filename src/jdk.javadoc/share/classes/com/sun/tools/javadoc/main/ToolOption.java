@@ -159,6 +159,9 @@ public enum ToolOption {
         public void process(Helper helper, String arg) {
             helper.encoding = arg;
             helper.setCompilerOpt(opt, arg);
+
+            // GOOGLE: https://bugs.openjdk.java.net/browse/JDK-8188649
+            helper.setFileManagerOpt(Option.ENCODING, arg);
         }
     },
 
