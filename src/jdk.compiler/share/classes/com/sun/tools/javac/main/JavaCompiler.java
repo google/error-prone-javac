@@ -1497,10 +1497,16 @@ public class JavaCompiler {
         }
         ScanNested scanner = new ScanNested();
         scanner.scan(env.tree);
-        for (Env<AttrContext> dep: scanner.dependencies) {
-        if (!compileStates.isDone(dep, CompileState.FLOW))
-            desugaredEnvs.put(dep, desugar(flow(attribute(dep))));
+        if (compilePolicy == CompilePolicy.BY_FILE) {
+            desugarByFile(scanner.dependencies);
+        } else {
+            for (Env<AttrContext> dep: scanner.dependencies) {
+                if (!compileStates.isDone(dep, CompileState.FLOW)) {
+                    desugaredEnvs.put(dep, desugar(flow(attribute(dep))));
+                }
+            }
         }
+
 
         //We need to check for error another time as more classes might
         //have been attributed and analyzed at this stage
@@ -1579,6 +1585,20 @@ public class JavaCompiler {
         }
 
     }
+        // where
+        private void desugarByFile(Iterable<Env<AttrContext>> envs) {
+            Set<JCCompilationUnit> seen = new HashSet<>();
+            for (Env<AttrContext> env: envs) {
+                if (compileStates.isDone(env, CompileState.FLOW)) {
+                    continue;
+                }
+                if (seen.add(env.toplevel)) {
+                    // process unique compilation units up to flow
+                    flow(attribute(todo.groupByFile(env)));
+                }
+                desugaredEnvs.put(env, desugar(ListBuffer.of(env)));
+            }
+        }
 
     /** Generates the source or class file for a list of classes.
      * The decision to generate a source file or a class file is
@@ -1638,20 +1658,6 @@ public class JavaCompiler {
     }
 
         // where
-        Map<JCCompilationUnit, Queue<Env<AttrContext>>> groupByFile(Queue<Env<AttrContext>> envs) {
-            // use a LinkedHashMap to preserve the order of the original list as much as possible
-            Map<JCCompilationUnit, Queue<Env<AttrContext>>> map = new LinkedHashMap<>();
-            for (Env<AttrContext> env: envs) {
-                Queue<Env<AttrContext>> sublist = map.get(env.toplevel);
-                if (sublist == null) {
-                    sublist = new ListBuffer<>();
-                    map.put(env.toplevel, sublist);
-                }
-                sublist.add(env);
-            }
-            return map;
-        }
-
         JCClassDecl removeMethodBodies(JCClassDecl cdef) {
             final boolean isInterface = (cdef.mods.flags & Flags.INTERFACE) != 0;
             class MethodBodyRemover extends TreeTranslator {

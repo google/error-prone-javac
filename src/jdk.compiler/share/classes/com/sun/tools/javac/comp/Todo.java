@@ -113,6 +113,10 @@ public class Todo extends AbstractQueue<Env<AttrContext>> {
         return (size() == 0 ? null : contents.get(0));
     }
 
+    public Queue<Env<AttrContext>> groupByFile(Env<AttrContext> env) {
+      return new LinkedList<>(fileMap.get(env.toplevel.sourcefile));
+    }
+
     public Queue<Queue<Env<AttrContext>>> groupByFile() {
         if (contentsByFile == null) {
             contentsByFile = new LinkedList<>();
