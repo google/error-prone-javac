@@ -614,6 +614,10 @@ public class ClassFinder {
         boolean haveSourcePath = includeSourcePath && fileManager.hasLocation(SOURCE_PATH);
 
         if (verbose && verbosePath) {
+
+            // https://bugs.openjdk.java.net/browse/JDK-8179373
+            verbosePath = false;
+
             if (fileManager instanceof StandardJavaFileManager) {
                 StandardJavaFileManager fm = (StandardJavaFileManager)fileManager;
                 if (haveSourcePath && wantSourceFiles) {
